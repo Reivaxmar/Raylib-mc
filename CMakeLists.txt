@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 # Set project name
-project(proj)
+project(mc)
 
 set(CMAKE_CXX_STANDARD 17)
 

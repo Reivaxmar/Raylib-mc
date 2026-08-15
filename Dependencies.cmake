@@ -4,15 +4,17 @@
 
 include(FetchContent)
 
-# SFML
-find_package(SFML 2.5 QUIET)
-if(NOT SFML_FOUND)
+# Raylib
+find_package(raylib QUIET)
+
+if(NOT raylib_FOUND)
+    message("Raylib not found, installing...")
     FetchContent_Declare(
-        SFML
-        GIT_REPOSITORY https://github.com/SFML/SFML.git
-        GIT_TAG 2.6.x
+        raylib
+        GIT_REPOSITORY https://github.com/raysan5/raylib.git
+        GIT_TAG 6.0
     )
-    
-    FetchContent_MakeAvailable(SFML)
+    FetchContent_MakeAvailable(raylib)
 endif()
-target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-window sfml-system)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib)

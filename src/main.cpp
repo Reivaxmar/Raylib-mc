@@ -1,6 +1,13 @@
 #include <iostream>
+#include <raylib.h>
 #include "header.h"
 
 int main() {
-    std::cout << a_cool_string() << std::endl;
+    InitWindow(1600, 900, "Raylib-mc");
+
+    SetTargetFPS(GetMonitorRefreshRate(GetCurrentMonitor()));
+
+    while(!WindowShouldClose()) {
+        
+    }
 }
