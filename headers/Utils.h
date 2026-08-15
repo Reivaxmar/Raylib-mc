@@ -7,6 +7,13 @@ struct Vector3i {
     int x, y, z;
 };
 
+constexpr Vector3 operator+(const Vector3& l, const Vector3& r) {
+    return (Vector3){ l.x + r.x, l.y + r.y, l.z + r.z };
+}
+constexpr Vector3 operator-(const Vector3& l, const Vector3& r) {
+    return (Vector3){ l.x - r.x, l.y - r.y, l.z - r.z };
+}
+
 int Vec3_to_idx(Vector3i v, Vector3i map_size) {
     return v.x + v.y * map_size.x + v.z * map_size.x * map_size.y;
 }
