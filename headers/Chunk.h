@@ -31,9 +31,9 @@ public:
         
         m_mesh = {0};
 
-        // for(int i = 0; i < CH_SIZE.x * CH_SIZE.y * CH_SIZE.z; i++) {
-        //     m_data[i] = (BlockID)GetRandomValue(0, 2);
-        // }
+        for(int i = 0; i < CH_SIZE.x * CH_SIZE.y * CH_SIZE.z; i++) {
+            m_data[i] = (BlockID)GetRandomValue(0, 2);
+        }
         for(int x = 0; x < CH_SIZE.x; x++) {
             for(int z = 0; z < CH_SIZE.z; z++) {
                 m_data[Vec3_to_idx(Vector3i(x, 0, z), CH_SIZE)] = BlockID::DIRT;
@@ -253,28 +253,28 @@ private:
             v[3] = {1, 0, 1};
         } else if(face == 2) { // Right face
             n = {1, 0, 0};
-            v[0] = {1, 0, 0};
-            v[1] = {1, 0, 1};
-            v[2] = {1, 1, 0};
-            v[3] = {1, 1, 1};
+            v[3] = {1, 0, 0};
+            v[2] = {1, 0, 1};
+            v[1] = {1, 1, 0};
+            v[0] = {1, 1, 1};
         } else if(face == 3) { // Left face
             n = {-1, 0, 0};
-            v[0] = {0, 0, 0};
-            v[1] = {0, 1, 0};
-            v[2] = {0, 0, 1};
-            v[3] = {0, 1, 1};
+            v[2] = {0, 0, 0};
+            v[0] = {0, 1, 0};
+            v[3] = {0, 0, 1};
+            v[1] = {0, 1, 1};
         } else if(face == 4) { // Front face
             n = {0, 0, 1};
-            v[0] = {0, 0, 1};
-            v[1] = {0, 1, 1};
-            v[2] = {1, 0, 1};
-            v[3] = {1, 1, 1};
+            v[2] = {0, 0, 1};
+            v[0] = {0, 1, 1};
+            v[3] = {1, 0, 1};
+            v[1] = {1, 1, 1};
         } else if(face == 5) { // Back face
             n = {0, 0, -1};
-            v[0] = {0, 0, 0};
-            v[1] = {1, 0, 0};
-            v[2] = {0, 1, 0};
-            v[3] = {1, 1, 0};
+            v[3] = {0, 0, 0};
+            v[2] = {1, 0, 0};
+            v[1] = {0, 1, 0};
+            v[0] = {1, 1, 0};
         }
 
         for(int i = 0; i < 4; i++) {
