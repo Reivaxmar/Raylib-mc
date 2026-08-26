@@ -12,9 +12,9 @@
 
 constexpr Vector3i CH_SIZE = { 16, 32, 16 };
 
-enum class BlockID : unsigned short {
-    AIR, GRASS, DIRT
-};
+// enum class BlockID : unsigned short {
+//     AIR, GRASS, DIRT
+// };
 
 class Chunk {
 public:
