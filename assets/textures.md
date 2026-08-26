@@ -20,3 +20,7 @@ Here, we will go through all the different types:
 2. **"cube_top_bottom"**: three textures for the faces, one for the top, one for the bottom and one for all the sides. The arguments are "top", "bottom" and "side".
 3. **"cube_column"**: two textures for the faces, one for the top and bottom and one for all the sides. The arguments are "end" and "side".
 4. **"air"**: only for air, doesn't contain any textures.
+
+In addition, they have a **"transparent"** boolean false by default, which defines if faces should be put between blocks (glass, leaves, etc).
+
+TODO: sepparate transparent mesh from opaque mesh.

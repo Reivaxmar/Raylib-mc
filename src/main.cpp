@@ -29,11 +29,13 @@ int main() {
             BeginMode3D(player.get_cam());
 
                 // DrawCube(Vector3{0.f, 0.f, 0.f}, 1.f, 1.f, 1.f, SKYBLUE);
+                BeginBlendMode(BLEND_ALPHA);
 
                 chunk.Draw();
                 chunk2.Draw();
                 chunk3.Draw();
 
+                EndBlendMode();
 
             
             EndMode3D();

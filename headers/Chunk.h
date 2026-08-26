@@ -32,13 +32,14 @@ public:
         
         m_mesh = {0};
 
-        for(int i = 0; i < CH_SIZE.x * CH_SIZE.y * CH_SIZE.z; i++) {
-            m_data[i] = (BlockID)GetRandomValue(0, 2);
-        }
+        // for(int i = 0; i < CH_SIZE.x * CH_SIZE.y * CH_SIZE.z; i++) {
+        //     m_data[i] = (BlockID)GetRandomValue(0, 2);
+        // }
         for(int x = 0; x < CH_SIZE.x; x++) {
             for(int z = 0; z < CH_SIZE.z; z++) {
                 m_data[Vec3_to_idx(Vector3i(x, 0, z), CH_SIZE)] = BlockID(1);
-                m_data[Vec3_to_idx(Vector3i(x, 1, z), CH_SIZE)] = BlockID(1);
+                m_data[Vec3_to_idx(Vector3i(x, 2, z), CH_SIZE)] = BlockID(2);
+                m_data[Vec3_to_idx(Vector3i(x, 1, z), CH_SIZE)] = BlockID(3);
             }
         }
     }
@@ -108,24 +109,24 @@ private:
                     // |   |
                     // 3---0
 
-                    if(getBlockData(GetBlock(pos + (Vector3i){0, 1, 0})).transparent) {
+                    if(getBlockData(GetBlock(pos + (Vector3i){0, 1, 0})).transparent && GetBlock(pos + (Vector3i){0, 1, 0}) != block) {
                         add_face(0, Vector3(pos), bData.faceIDs[0], verts, normals, uvs, indices);
                     }
-                    if(getBlockData(GetBlock(pos + (Vector3i){0, -1, 0})).transparent) {
+                    if(getBlockData(GetBlock(pos + (Vector3i){0, -1, 0})).transparent && GetBlock(pos + (Vector3i){0, -1, 0}) != block) {
                         add_face(1, Vector3(pos), bData.faceIDs[1], verts, normals, uvs, indices);
                     }
                     
-                    if(getBlockData(GetBlock(pos + (Vector3i){1, 0, 0})).transparent) {
+                    if(getBlockData(GetBlock(pos + (Vector3i){1, 0, 0})).transparent && GetBlock(pos + (Vector3i){1, 0, 0}) != block) {
                         add_face(2, Vector3(pos), bData.faceIDs[2], verts, normals, uvs, indices);
                     }
-                    if(getBlockData(GetBlock(pos + (Vector3i){-1, 0, 0})).transparent) {
+                    if(getBlockData(GetBlock(pos + (Vector3i){-1, 0, 0})).transparent && GetBlock(pos + (Vector3i){-1, 0, 0}) != block) {
                         add_face(3, Vector3(pos), bData.faceIDs[3], verts, normals, uvs, indices);
                     }
 
-                    if(getBlockData(GetBlock(pos + (Vector3i){0, 0, 1})).transparent) {
+                    if(getBlockData(GetBlock(pos + (Vector3i){0, 0, 1})).transparent && GetBlock(pos + (Vector3i){0, 0, 1}) != block) {
                         add_face(4, Vector3(pos), bData.faceIDs[4], verts, normals, uvs, indices);
                     }
-                    if(getBlockData(GetBlock(pos + (Vector3i){0, 0, -1})).transparent) {
+                    if(getBlockData(GetBlock(pos + (Vector3i){0, 0, -1})).transparent && GetBlock(pos + (Vector3i){0, 0, -1}) != block) {
                         add_face(5, Vector3(pos), bData.faceIDs[5], verts, normals, uvs, indices);
                     }
                 }
