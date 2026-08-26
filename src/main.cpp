@@ -2,8 +2,12 @@
 #include <raylib.h>
 #include "Player.h"
 #include "Chunk.h"
+#include "BlockLoader.h"
 
 int main() {
+    // Load block data
+    BlockLoader::getInstance().loadData("assets");
+
     InitWindow(1600, 900, "Raylib mc");
 
     SetTargetFPS(GetMonitorRefreshRate(GetCurrentMonitor()));

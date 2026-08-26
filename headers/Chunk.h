@@ -4,6 +4,7 @@
 #include <array>
 #include <vector>
 #include "Utils.h"
+#include  "Block.h"
 
 #include <raymath.h>
 
@@ -26,7 +27,7 @@ public:
         m_matrix = MatrixTranslate(chunk_pos.x * CH_SIZE.x, chunk_pos.y * CH_SIZE.y, chunk_pos.z * CH_SIZE.z);
 
         m_upd_mesh = true;
-        m_data.fill(BlockID::AIR);
+        m_data.fill(BlockID(0));
         m_chunk_pos = chunk_pos;
         
         m_mesh = {0};
@@ -36,8 +37,8 @@ public:
         }
         for(int x = 0; x < CH_SIZE.x; x++) {
             for(int z = 0; z < CH_SIZE.z; z++) {
-                m_data[Vec3_to_idx(Vector3i(x, 0, z), CH_SIZE)] = BlockID::DIRT;
-                m_data[Vec3_to_idx(Vector3i(x, 1, z), CH_SIZE)] = BlockID::GRASS;
+                m_data[Vec3_to_idx(Vector3i(x, 0, z), CH_SIZE)] = BlockID(1);
+                m_data[Vec3_to_idx(Vector3i(x, 1, z), CH_SIZE)] = BlockID(1);
             }
         }
     }
@@ -48,23 +49,6 @@ public:
         }
 
         DrawMesh(m_mesh, m_mat, m_matrix);
-
-
-        // for(int x = 0; x < CH_SIZE.x; x++) {
-        //     for(int y = 0; y < CH_SIZE.y; y++) {
-        //         for(int z = 0; z < CH_SIZE.z; z++) {
-        //             int idx = Vec3_to_idx({x, y, z}, CH_SIZE);
-        //             BlockID block = m_data[idx];
-
-        //             if(block == BlockID::AIR) continue;
-        //             else if(block == BlockID::GRASS) {
-        //                 DrawCube((Vector3){x, y, z}, 1.f, 1.f, 1.f, GREEN);
-        //             } else if(block == BlockID::DIRT) {
-        //                 DrawCube((Vector3){x, y, z}, 1.f, 1.f, 1.f, BROWN);
-        //             }
-        //         }
-        //     }
-        // }
     }
 
     void SetBlock(Vector3i pos, BlockID block) {
@@ -82,7 +66,7 @@ public:
         // If outside
         if(pos.x < 0 || pos.y < 0 || pos.z < 0 ||
            pos.x >= CH_SIZE.x || pos.y >= CH_SIZE.y || pos.z >= CH_SIZE.z) {
-            return BlockID::AIR;
+            return BlockID(0);
         }
         return m_data[Vec3_to_idx(pos, CH_SIZE)];
     }
@@ -112,7 +96,8 @@ private:
                 for(int z = 0; z < CH_SIZE.z; z++) {
                     int idx = Vec3_to_idx({x, y, z}, CH_SIZE);
                     BlockID block = m_data[idx];
-                    if(block == BlockID::AIR) continue;
+                    BlockData bData = getBlockData(block);
+                    if(!bData.drawn) continue;
 
                     Vector3i pos = (Vector3i){ x, y, z };
 
@@ -123,62 +108,26 @@ private:
                     // |   |
                     // 3---0
 
-                    if(GetBlock(pos + (Vector3i){0, 1, 0}) == BlockID::AIR) {
-                        add_face(0, Vector3(pos), block, verts, normals, uvs, indices);
+                    if(getBlockData(GetBlock(pos + (Vector3i){0, 1, 0})).transparent) {
+                        add_face(0, Vector3(pos), bData.faceIDs[0], verts, normals, uvs, indices);
                     }
-                    if(GetBlock(pos + (Vector3i){0, -1, 0}) == BlockID::AIR) {
-                        add_face(1, Vector3(pos), block, verts, normals, uvs, indices);
+                    if(getBlockData(GetBlock(pos + (Vector3i){0, -1, 0})).transparent) {
+                        add_face(1, Vector3(pos), bData.faceIDs[1], verts, normals, uvs, indices);
                     }
                     
-                    if(GetBlock(pos + (Vector3i){1, 0, 0}) == BlockID::AIR) {
-                        add_face(2, Vector3(pos), block, verts, normals, uvs, indices);
+                    if(getBlockData(GetBlock(pos + (Vector3i){1, 0, 0})).transparent) {
+                        add_face(2, Vector3(pos), bData.faceIDs[2], verts, normals, uvs, indices);
                     }
-                    if(GetBlock(pos + (Vector3i){-1, 0, 0}) == BlockID::AIR) {
-                        add_face(3, Vector3(pos), block, verts, normals, uvs, indices);
-                    }
-
-                    if(GetBlock(pos + (Vector3i){0, 0, 1}) == BlockID::AIR) {
-                        add_face(4, Vector3(pos), block, verts, normals, uvs, indices);
-                    }
-                    if(GetBlock(pos + (Vector3i){0, 0, -1}) == BlockID::AIR) {
-                        add_face(5, Vector3(pos), block, verts, normals, uvs, indices);
+                    if(getBlockData(GetBlock(pos + (Vector3i){-1, 0, 0})).transparent) {
+                        add_face(3, Vector3(pos), bData.faceIDs[3], verts, normals, uvs, indices);
                     }
 
-                    // // Front face
-                    // verts.push_back(pos + (Vector3){ 0.5f, -0.5f, -0.5f});
-                    // verts.push_back(pos + (Vector3){ 0.5f,  0.5f, -0.5f});
-                    // verts.push_back(pos + (Vector3){-0.5f,  0.5f, -0.5f});
-                    // verts.push_back(pos + (Vector3){-0.5f, -0.5f, -0.5f});
-
-                    // // Back face
-                    // verts.push_back(pos + (Vector3){-0.5f, -0.5f, 0.5f});
-                    // verts.push_back(pos + (Vector3){-0.5f,  0.5f, 0.5f});
-                    // verts.push_back(pos + (Vector3){ 0.5f,  0.5f, 0.5f});
-                    // verts.push_back(pos + (Vector3){ 0.5f, -0.5f, 0.5f});
-                    
-                    // // Left face
-                    // verts.push_back(pos + (Vector3){ 0.5f, -0.5f, -0.5f});
-                    // verts.push_back(pos + (Vector3){ 0.5f,  0.5f, -0.5f});
-                    // verts.push_back(pos + (Vector3){-0.5f,  0.5f, -0.5f});
-                    // verts.push_back(pos + (Vector3){-0.5f, -0.5f, -0.5f});
-
-                    // // Right face
-                    // verts.push_back(pos + (Vector3){ 0.5f, -0.5f, -0.5f});
-                    // verts.push_back(pos + (Vector3){ 0.5f,  0.5f, -0.5f});
-                    // verts.push_back(pos + (Vector3){-0.5f,  0.5f, -0.5f});
-                    // verts.push_back(pos + (Vector3){-0.5f, -0.5f, -0.5f});
-
-                    // // Top face
-                    // verts.push_back(pos + (Vector3){ 0.5f, -0.5f, -0.5f});
-                    // verts.push_back(pos + (Vector3){ 0.5f,  0.5f, -0.5f});
-                    // verts.push_back(pos + (Vector3){-0.5f,  0.5f, -0.5f});
-                    // verts.push_back(pos + (Vector3){-0.5f, -0.5f, -0.5f});
-
-                    // // Bottom face
-                    // verts.push_back(pos + (Vector3){ 0.5f, -0.5f, -0.5f});
-                    // verts.push_back(pos + (Vector3){ 0.5f,  0.5f, -0.5f});
-                    // verts.push_back(pos + (Vector3){-0.5f,  0.5f, -0.5f});
-                    // verts.push_back(pos + (Vector3){-0.5f, -0.5f, -0.5f});
+                    if(getBlockData(GetBlock(pos + (Vector3i){0, 0, 1})).transparent) {
+                        add_face(4, Vector3(pos), bData.faceIDs[4], verts, normals, uvs, indices);
+                    }
+                    if(getBlockData(GetBlock(pos + (Vector3i){0, 0, -1})).transparent) {
+                        add_face(5, Vector3(pos), bData.faceIDs[5], verts, normals, uvs, indices);
+                    }
                 }
             }
         }
@@ -202,7 +151,7 @@ private:
     }
 
     // [0, 1, 2, 3, 4, 5] => [Top, Bottom, Right, Left, Front, Back]
-    void add_face(int face, Vector3 pos, BlockID block,
+    void add_face(int face, Vector3 pos, unsigned int faceID,
         std::vector<Vector3>& verts,
         std::vector<Vector3>& normals,
         std::vector<Vector2>& uvs,
@@ -225,8 +174,8 @@ private:
         Vector3 v[4];
         Vector2 uv[4];
 
-        int tile_x = (int)(block) % 16;
-        int tile_y = (int)(block) / 16;
+        int tile_x = (int)(faceID) % 16;
+        int tile_y = (int)(faceID) / 16;
         constexpr float tile_size = 1.0f / 16.0f;
 
         float u0 = tile_x * tile_size;

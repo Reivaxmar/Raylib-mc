@@ -1,4 +1,9 @@
 {
+    "air": {
+        "type": "air",
+        "transparent": true,
+        "drawn": false
+    },
     "dirt": {
         "type": "cube_all",
         "textures": {

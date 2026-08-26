@@ -19,3 +19,4 @@ Here, we will go through all the different types:
 1. **"cube_all"**: a single texture for all the faces, only requires one argument: "all".
 2. **"cube_top_bottom"**: three textures for the faces, one for the top, one for the bottom and one for all the sides. The arguments are "top", "bottom" and "side".
 3. **"cube_column"**: two textures for the faces, one for the top and bottom and one for all the sides. The arguments are "end" and "side".
+4. **"air"**: only for air, doesn't contain any textures.
