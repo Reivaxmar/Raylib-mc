@@ -5,11 +5,11 @@
 #include "BlockLoader.h"
 
 int main() {
+    InitWindow(1600, 900, "Raylib mc");
+    
     // Load block data
     BlockLoader::getInstance().loadData("assets");
-
-    InitWindow(1600, 900, "Raylib mc");
-
+    
     SetTargetFPS(GetMonitorRefreshRate(GetCurrentMonitor()));
     DisableCursor();
 

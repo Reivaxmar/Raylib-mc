@@ -22,7 +22,7 @@ public:
 
     Chunk(Vector3i chunk_pos) {
         m_mat = LoadMaterialDefault();
-        m_mat.maps[MATERIAL_MAP_DIFFUSE].texture = LoadTexture("assets/blocks.png");
+        m_mat.maps[MATERIAL_MAP_DIFFUSE].texture = BlockLoader::getInstance().getAtlas();
 
         m_matrix = MatrixTranslate(chunk_pos.x * CH_SIZE.x, chunk_pos.y * CH_SIZE.y, chunk_pos.z * CH_SIZE.z);
 

@@ -5,6 +5,8 @@
 #include <filesystem>
 #include <fstream>
 
+#include <raylib.h>
+
 namespace fs = std::filesystem;
 using json = nlohmann::json;
 
@@ -16,6 +18,7 @@ private:
 
     json m_data;
     std::vector<std::string> m_blockNames;
+    Texture2D m_blockAtlas;
 
 public:
     BlockLoader(const BlockLoader&) = delete;
@@ -44,7 +47,9 @@ public:
         for (const auto& [name, block] : m_data.items()) {
             m_blockNames.push_back(name);
         }
-        // std::cout << m_data.dump() << std::endl;
+        
+        // Load atlas map
+        m_blockAtlas = LoadTexture((path / "blocks.png").c_str());
     }
 
     const json& getData() const {
@@ -54,6 +59,10 @@ public:
     const std::string& getName(const BlockID& id) const {
         if(id > m_blockNames.size()) return "";
         return m_blockNames[id];
+    }
+
+    const Texture2D& getAtlas() const {
+        return m_blockAtlas;
     }
 };
 
