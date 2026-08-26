@@ -15,6 +15,8 @@ int main() {
 
     Player player;
     Chunk chunk({0, 0, 0});
+    Chunk chunk2({2, 0, 0});
+    Chunk chunk3({0, 2, 0});
 
     while(!WindowShouldClose()) {
 
@@ -29,10 +31,14 @@ int main() {
                 // DrawCube(Vector3{0.f, 0.f, 0.f}, 1.f, 1.f, 1.f, SKYBLUE);
 
                 chunk.Draw();
+                chunk2.Draw();
+                chunk3.Draw();
 
 
             
             EndMode3D();
+            
+            DrawFPS(10, 10);
 
         EndDrawing();
 
