@@ -8,14 +8,7 @@
 
 #include <raymath.h>
 
-// const int CHUNK_SIZE = 16;
-// const int CHUNK_HEIGHT = 32;
-
 constexpr Vector3i CH_SIZE = { 16, 32, 16 };
-
-// enum class BlockID : unsigned short {
-//     AIR, GRASS, DIRT
-// };
 
 class Chunk {
 public:
@@ -36,8 +29,8 @@ private:
 
     bool m_upd_mesh;
 
-    Model m_model;
-    Mesh m_mesh;
+    // Model m_model;
+    Mesh m_opaque_mesh, m_cutout_mesh, m_transparent_mesh;
     Material m_mat;
 
     Matrix m_matrix;
@@ -45,12 +38,7 @@ private:
     void update_mesh();
 
     // [0, 1, 2, 3, 4, 5] => [Top, Bottom, Right, Left, Front, Back]
-    void add_face(int face, Vector3 pos, unsigned int faceID,
-        std::vector<Vector3>& verts,
-        std::vector<Vector3>& normals,
-        std::vector<Vector2>& uvs,
-        std::vector<unsigned short>& indices
-    );
+    void add_face(int face, Vector3 pos, unsigned int faceID, MeshData& data);
 
 };
 

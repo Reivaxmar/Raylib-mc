@@ -2,6 +2,7 @@
 #define UTILS_MC_H
 
 #include <raylib.h>
+#include <vector>
 
 struct Vector3i {
     int x, y, z;
@@ -33,6 +34,24 @@ constexpr Vector3i operator+(const Vector3i& l, const Vector3i& r) {
 constexpr Vector3i operator-(const Vector3i& l, const Vector3i& r) {
     return (Vector3i){ l.x - r.x, l.y - r.y, l.z - r.z };
 }
+
+struct MeshData {
+    std::vector<Vector3> verts;
+    std::vector<Vector3> normals;
+    std::vector<Vector2> uvs;
+    std::vector<unsigned short> indices;
+
+    MeshData() {}
+
+    void UploadData(Mesh& mesh) {
+        mesh.vertexCount = verts.size();
+        mesh.triangleCount = indices.size() / 3;
+        mesh.vertices = reinterpret_cast<float*>(verts.data());
+        mesh.indices = indices.data();
+        mesh.normals = reinterpret_cast<float*>(normals.data());
+        mesh.texcoords = reinterpret_cast<float*>(uvs.data());
+    }
+};
 
 // constexpr Vector3 operator+(const Vector3& l, const Vector3& r) {
 //     return (Vector3){ l.x + r.x, l.y + r.y, l.z + r.z };

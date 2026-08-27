@@ -10,7 +10,9 @@ Chunk::Chunk(Vector3i chunk_pos) {
     m_data.fill(BlockID(0));
     m_chunk_pos = chunk_pos;
     
-    m_mesh = {0};
+    m_opaque_mesh = {0};
+    m_transparent_mesh = {0};
+    m_cutout_mesh = {0};
 
     // for(int i = 0; i < CH_SIZE.x * CH_SIZE.y * CH_SIZE.z; i++) {
     //     m_data[i] = (BlockID)GetRandomValue(0, 2);
@@ -29,7 +31,9 @@ void Chunk::Draw() {
         update_mesh();
     }
 
-    DrawMesh(m_mesh, m_mat, m_matrix);
+    DrawMesh(m_opaque_mesh, m_mat, m_matrix);
+    DrawMesh(m_cutout_mesh, m_mat, m_matrix);
+    DrawMesh(m_transparent_mesh, m_mat, m_matrix);
 }
 
 void Chunk::SetBlock(Vector3i pos, BlockID block) {
@@ -53,9 +57,10 @@ BlockID Chunk::GetBlock(Vector3i pos) const {
 }
 
 void Chunk::update_mesh() {
-    std::vector<Vector3> verts, normals;
-    std::vector<Vector2> uvs;
-    std::vector<unsigned short> indices;
+    // std::vector<Vector3> verts, normals;
+    // std::vector<Vector2> uvs;
+    // std::vector<unsigned short> indices;
+    MeshData opaque, transparent, cutout;
 
     for(int x = 0; x < CH_SIZE.x; x++) {
         for(int y = 0; y < CH_SIZE.y; y++) {
@@ -67,7 +72,8 @@ void Chunk::update_mesh() {
 
                 Vector3i pos = (Vector3i){ x, y, z };
 
-                // if()
+                MeshData* data = &opaque;
+                if(bData.transparent) data = &transparent;
 
                 // Faces:
                 // 2---1
@@ -75,64 +81,61 @@ void Chunk::update_mesh() {
                 // 3---0
 
                 if(getBlockData(GetBlock(pos + (Vector3i){0, 1, 0})).transparent && GetBlock(pos + (Vector3i){0, 1, 0}) != block) {
-                    add_face(0, Vector3(pos), bData.faceIDs[0], verts, normals, uvs, indices);
+                    add_face(0, Vector3(pos), bData.faceIDs[0], *data);
                 }
                 if(getBlockData(GetBlock(pos + (Vector3i){0, -1, 0})).transparent && GetBlock(pos + (Vector3i){0, -1, 0}) != block) {
-                    add_face(1, Vector3(pos), bData.faceIDs[1], verts, normals, uvs, indices);
+                    add_face(1, Vector3(pos), bData.faceIDs[1], *data);
                 }
                 
                 if(getBlockData(GetBlock(pos + (Vector3i){1, 0, 0})).transparent && GetBlock(pos + (Vector3i){1, 0, 0}) != block) {
-                    add_face(2, Vector3(pos), bData.faceIDs[2], verts, normals, uvs, indices);
+                    add_face(2, Vector3(pos), bData.faceIDs[2], *data);
                 }
                 if(getBlockData(GetBlock(pos + (Vector3i){-1, 0, 0})).transparent && GetBlock(pos + (Vector3i){-1, 0, 0}) != block) {
-                    add_face(3, Vector3(pos), bData.faceIDs[3], verts, normals, uvs, indices);
+                    add_face(3, Vector3(pos), bData.faceIDs[3], *data);
                 }
 
                 if(getBlockData(GetBlock(pos + (Vector3i){0, 0, 1})).transparent && GetBlock(pos + (Vector3i){0, 0, 1}) != block) {
-                    add_face(4, Vector3(pos), bData.faceIDs[4], verts, normals, uvs, indices);
+                    add_face(4, Vector3(pos), bData.faceIDs[4], *data);
                 }
                 if(getBlockData(GetBlock(pos + (Vector3i){0, 0, -1})).transparent && GetBlock(pos + (Vector3i){0, 0, -1}) != block) {
-                    add_face(5, Vector3(pos), bData.faceIDs[5], verts, normals, uvs, indices);
+                    add_face(5, Vector3(pos), bData.faceIDs[5], *data);
                 }
             }
         }
     }
 
-    if (m_mesh.vaoId != 0) {
-        UnloadMesh(m_mesh);
-    }
+    if(m_opaque_mesh.vaoId != 0) UnloadMesh(m_opaque_mesh);
+    if(m_transparent_mesh.vaoId != 0) UnloadMesh(m_transparent_mesh);
+    if(m_cutout_mesh.vaoId != 0) UnloadMesh(m_cutout_mesh);
+        
 
-    m_mesh = {0};
+    m_opaque_mesh = {0};
+    m_transparent_mesh = {0};
+    m_cutout_mesh = {0};
 
-    m_mesh.vertexCount = verts.size();
-    m_mesh.triangleCount = indices.size() / 3;
-    m_mesh.vertices = reinterpret_cast<float*>(verts.data());
-    m_mesh.indices = indices.data();
-    m_mesh.normals = reinterpret_cast<float*>(normals.data());
-    m_mesh.texcoords = reinterpret_cast<float*>(uvs.data());
+    opaque.UploadData(m_opaque_mesh);
+    transparent.UploadData(m_transparent_mesh);
+    cutout.UploadData(m_cutout_mesh);
 
-    UploadMesh(&m_mesh, false);
+    UploadMesh(&m_opaque_mesh, false);
+    UploadMesh(&m_transparent_mesh, false);
+    UploadMesh(&m_cutout_mesh, false);
 
     m_upd_mesh = false;
 }
 
-void Chunk::add_face(int face, Vector3 pos, unsigned int faceID,
-    std::vector<Vector3>& verts,
-    std::vector<Vector3>& normals,
-    std::vector<Vector2>& uvs,
-    std::vector<unsigned short>& indices
-) {
+void Chunk::add_face(int face, Vector3 pos, unsigned int faceID, MeshData& data) {
 
     // if(face >= 2) return;
-    int vert_idx = verts.size();
+    int vert_idx = data.verts.size();
 
-    indices.push_back(vert_idx + 2);
-    indices.push_back(vert_idx + 1);
-    indices.push_back(vert_idx + 0);
+    data.indices.push_back(vert_idx + 2);
+    data.indices.push_back(vert_idx + 1);
+    data.indices.push_back(vert_idx + 0);
 
-    indices.push_back(vert_idx + 2);
-    indices.push_back(vert_idx + 3);
-    indices.push_back(vert_idx + 1);
+    data.indices.push_back(vert_idx + 2);
+    data.indices.push_back(vert_idx + 3);
+    data.indices.push_back(vert_idx + 1);
 
 
     Vector3 n;
@@ -192,8 +195,8 @@ void Chunk::add_face(int face, Vector3 pos, unsigned int faceID,
     }
 
     for(int i = 0; i < 4; i++) {
-        verts.push_back(v[i] + pos);
-        uvs.push_back(uv[i]);
-        normals.push_back(n);
+        data.verts.push_back(v[i] + pos);
+        data.uvs.push_back(uv[i]);
+        data.normals.push_back(n);
     }
 }
