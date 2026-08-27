@@ -3,6 +3,8 @@
 
 #include <raylib.h>
 #include <vector>
+#include <raymath.h>
+#include <iostream>
 
 struct Vector3i {
     int x, y, z;
@@ -35,6 +37,41 @@ constexpr Vector3i operator-(const Vector3i& l, const Vector3i& r) {
     return (Vector3i){ l.x - r.x, l.y - r.y, l.z - r.z };
 }
 
+constexpr bool operator<(const Vector3i& l, const Vector3i& r) {
+    if(l.x != r.x) return l.x < r.x;
+    if(l.y != r.y) return l.y < r.y;
+    return l.z < r.z;
+}
+
+struct Vector2i {
+    int x, y;
+
+    constexpr Vector2i()
+        : x(0), y(0) {}
+    constexpr Vector2i(int x, int y)
+        : x(x), y(y) {}
+
+    // Vector2 -> Vector2i
+    constexpr Vector2i(const Vector2& v)
+        : x(static_cast<int>(v.x)),
+          y(static_cast<int>(v.y)) {}
+
+    // Vector2i -> Vector2
+    constexpr operator Vector2() const {
+        return {
+            static_cast<float>(x),
+            static_cast<float>(y)
+        };
+    }
+};
+
+constexpr Vector2i operator+(const Vector2i& l, const Vector2i& r) {
+    return (Vector2i){ l.x + r.x, l.y + r.y };
+}
+constexpr Vector2i operator-(const Vector2i& l, const Vector2i& r) {
+    return (Vector2i){ l.x - r.x, l.y - r.y };
+}
+
 struct MeshData {
     std::vector<Vector3> verts;
     std::vector<Vector3> normals;
@@ -52,13 +89,6 @@ struct MeshData {
         mesh.texcoords = reinterpret_cast<float*>(uvs.data());
     }
 };
-
-// constexpr Vector3 operator+(const Vector3& l, const Vector3& r) {
-//     return (Vector3){ l.x + r.x, l.y + r.y, l.z + r.z };
-// }
-// constexpr Vector3 operator-(const Vector3& l, const Vector3& r) {
-//     return (Vector3){ l.x - r.x, l.y - r.y, l.z - r.z };
-// }
 
 inline int Vec3_to_idx(Vector3i v, Vector3i map_size) {
     return v.x + v.y * map_size.x + v.z * map_size.x * map_size.y;

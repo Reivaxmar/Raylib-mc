@@ -10,6 +10,14 @@
 
 constexpr Vector3i CH_SIZE = { 16, 32, 16 };
 
+inline Vector3i getChunk(Vector3i world) {
+    return Vector3i(world.x / CH_SIZE.x, world.y / CH_SIZE.y, world.z / CH_SIZE.z);
+}
+
+inline Vector3i worldToChunk(Vector3i world) {
+    return world - getChunk(world);
+}
+
 class Chunk {
 public:
 
@@ -21,6 +29,8 @@ public:
 
     BlockID GetBlock(Vector3i pos) const;
 
+    void GenerateTerrain(int seed);
+
 private:
 
     std::array<BlockID, CH_SIZE.x * CH_SIZE.y * CH_SIZE.z> m_data;
@@ -29,7 +39,6 @@ private:
 
     bool m_upd_mesh;
 
-    // Model m_model;
     Mesh m_opaque_mesh, m_cutout_mesh, m_transparent_mesh;
     Material m_mat;
 

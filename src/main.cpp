@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Chunk.h"
 #include "BlockLoader.h"
+#include "ChunkManager.h"
 
 int main() {
     InitWindow(1600, 900, "Raylib mc");
@@ -14,13 +15,13 @@ int main() {
     DisableCursor();
 
     Player player;
-    Chunk chunk({0, 0, 0});
-    Chunk chunk2({2, 0, 0});
-    Chunk chunk3({0, 2, 0});
+    ChunkManager chman;
 
     while(!WindowShouldClose()) {
 
         player.update(GetFrameTime());
+
+        chman.LoadChunk(getChunk(Vector3i(player.get_cam().position)));
         
         BeginDrawing();
 
@@ -28,15 +29,11 @@ int main() {
 
             BeginMode3D(player.get_cam());
 
-                // DrawCube(Vector3{0.f, 0.f, 0.f}, 1.f, 1.f, 1.f, SKYBLUE);
                 BeginBlendMode(BLEND_ALPHA);
 
-                chunk.Draw();
-                chunk2.Draw();
-                chunk3.Draw();
+                chman.Draw();
 
                 EndBlendMode();
-
             
             EndMode3D();
             

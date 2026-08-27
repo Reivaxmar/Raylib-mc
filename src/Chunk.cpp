@@ -1,11 +1,12 @@
 #include "Chunk.h"
+#include <iostream>
 
 Chunk::Chunk(Vector3i chunk_pos) {
     m_mat = LoadMaterialDefault();
     m_mat.maps[MATERIAL_MAP_DIFFUSE].texture = BlockLoader::getInstance().getAtlas();
 
     m_matrix = MatrixTranslate(chunk_pos.x * CH_SIZE.x, chunk_pos.y * CH_SIZE.y, chunk_pos.z * CH_SIZE.z);
-
+    
     m_upd_mesh = true;
     m_data.fill(BlockID(0));
     m_chunk_pos = chunk_pos;
@@ -14,16 +15,6 @@ Chunk::Chunk(Vector3i chunk_pos) {
     m_transparent_mesh = {0};
     m_cutout_mesh = {0};
 
-    // for(int i = 0; i < CH_SIZE.x * CH_SIZE.y * CH_SIZE.z; i++) {
-    //     m_data[i] = (BlockID)GetRandomValue(0, 2);
-    // }
-    for(int x = 0; x < CH_SIZE.x; x++) {
-        for(int z = 0; z < CH_SIZE.z; z++) {
-            m_data[Vec3_to_idx(Vector3i(x, 0, z), CH_SIZE)] = BlockID(1);
-            m_data[Vec3_to_idx(Vector3i(x, 2, z), CH_SIZE)] = BlockID(2);
-            m_data[Vec3_to_idx(Vector3i(x, 1, z), CH_SIZE)] = BlockID(3);
-        }
-    }
 }
 
 void Chunk::Draw() {
@@ -56,10 +47,20 @@ BlockID Chunk::GetBlock(Vector3i pos) const {
     return m_data[Vec3_to_idx(pos, CH_SIZE)];
 }
 
+void Chunk::GenerateTerrain(int seed) {
+
+    m_data.fill(BlockID(0));
+
+    for(int x = 0; x < CH_SIZE.x; x++) {
+        for(int z = 0; z < CH_SIZE.z; z++) {
+            m_data[Vec3_to_idx(Vector3i(x, 0, z), CH_SIZE)] = BlockID(1);
+            m_data[Vec3_to_idx(Vector3i(x, 2, z), CH_SIZE)] = BlockID(2);
+            m_data[Vec3_to_idx(Vector3i(x, 1, z), CH_SIZE)] = BlockID(3);
+        }
+    }
+}
+
 void Chunk::update_mesh() {
-    // std::vector<Vector3> verts, normals;
-    // std::vector<Vector2> uvs;
-    // std::vector<unsigned short> indices;
     MeshData opaque, transparent, cutout;
 
     for(int x = 0; x < CH_SIZE.x; x++) {
@@ -126,7 +127,6 @@ void Chunk::update_mesh() {
 
 void Chunk::add_face(int face, Vector3 pos, unsigned int faceID, MeshData& data) {
 
-    // if(face >= 2) return;
     int vert_idx = data.verts.size();
 
     data.indices.push_back(vert_idx + 2);
