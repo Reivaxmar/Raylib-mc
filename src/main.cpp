@@ -15,7 +15,7 @@ int main() {
     DisableCursor();
 
     Player player;
-    ChunkManager chman;
+    ChunkManager chman(12345u);
 
     while(!WindowShouldClose()) {
 

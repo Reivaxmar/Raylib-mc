@@ -43,10 +43,7 @@ BlockID Chunk::GetBlock(Vector3i pos) const {
     // If outside
     if(pos.x < 0 || pos.y < 0 || pos.z < 0 ||
         pos.x >= CH_SIZE.x || pos.y >= CH_SIZE.y || pos.z >= CH_SIZE.z) {
-        // return BlockID(0);
-        BlockID a = chman->GetBlock(pos + m_chunk_pos * CH_SIZE);
-        std::cout << a << std::endl;
-        return a;
+        return chman->GetBlock(pos + m_chunk_pos * CH_SIZE);
     }
     return m_data[Vec3_to_idx(pos, CH_SIZE)];
 }
@@ -57,9 +54,14 @@ void Chunk::GenerateTerrain(int seed) {
 
     for(int x = 0; x < CH_SIZE.x; x++) {
         for(int z = 0; z < CH_SIZE.z; z++) {
-            m_data[Vec3_to_idx(Vector3i(x, 0, z), CH_SIZE)] = BlockID(1);
-            m_data[Vec3_to_idx(Vector3i(x, 2, z), CH_SIZE)] = BlockID(2);
-            m_data[Vec3_to_idx(Vector3i(x, 1, z), CH_SIZE)] = BlockID(3);
+            Vector3i chunk_world = m_chunk_pos * CH_SIZE;
+            Vector2i xzworld = Vector2i(chunk_world.x + x, chunk_world.z + z);
+            int height = chman->GetTerrainHeight(xzworld);
+            for(int y = 0; y < CH_SIZE.y; y++) {
+                if(height - y - chunk_world.y > 0) m_data[Vec3_to_idx(Vector3i(x, y, z), CH_SIZE)] = BlockID(1);
+                else if(height - y == 0) m_data[Vec3_to_idx(Vector3i(x, y, z), CH_SIZE)] = BlockID(3);
+                else break;
+            }
         }
     }
 }

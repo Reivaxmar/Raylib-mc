@@ -58,6 +58,11 @@ struct Vector2i {
     constexpr Vector2i(const Vector2& v)
         : x(static_cast<int>(v.x)),
           y(static_cast<int>(v.y)) {}
+    
+    // Vector3i -> Vector2i
+    constexpr Vector2i(const Vector3i& v)
+        : x(static_cast<int>(v.x)),
+          y(static_cast<int>(v.y)) {}
 
     // Vector2i -> Vector2
     constexpr operator Vector2() const {

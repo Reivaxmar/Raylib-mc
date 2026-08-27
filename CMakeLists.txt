@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Get all the files
 file(GLOB_RECURSE SOURCES src/*.cpp)
-include_directories(headers /usr/include)
+include_directories(headers external)
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 include(Dependencies.cmake)
