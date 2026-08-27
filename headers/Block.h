@@ -12,7 +12,7 @@ struct BlockData {
     unsigned int faceIDs[6] = {};
 };
 
-BlockData getBlockData(const BlockID& id) {
+inline BlockData getBlockData(const BlockID& id) {
     // Load block loader
     auto& bl = BlockLoader::getInstance();
 
