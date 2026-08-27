@@ -36,6 +36,9 @@ constexpr Vector3i operator+(const Vector3i& l, const Vector3i& r) {
 constexpr Vector3i operator-(const Vector3i& l, const Vector3i& r) {
     return (Vector3i){ l.x - r.x, l.y - r.y, l.z - r.z };
 }
+constexpr Vector3i operator*(const Vector3i& l, const Vector3i& r) {
+    return (Vector3i){ l.x * r.x, l.y * r.y, l.z * r.z };
+}
 
 constexpr bool operator<(const Vector3i& l, const Vector3i& r) {
     if(l.x != r.x) return l.x < r.x;
@@ -100,6 +103,16 @@ inline Vector3i idx_to_Vec3(int idx, Vector3i map_size) {
         (idx / map_size.x) % map_size.y,
         idx / (map_size.x * map_size.y)
     };
+}
+
+inline int floorDiv(int a, int b) {
+    int q = a / b;
+    int r = a % b;
+
+    if (r != 0 && r < 0)
+        --q;
+
+    return q;
 }
 
 #endif // UTILS_MC_H

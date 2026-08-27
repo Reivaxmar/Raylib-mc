@@ -1,7 +1,8 @@
 #include "Chunk.h"
+#include "ChunkManager.h"
 #include <iostream>
 
-Chunk::Chunk(Vector3i chunk_pos) {
+Chunk::Chunk(ChunkManager* _chman, Vector3i chunk_pos) : chman(_chman) {
     m_mat = LoadMaterialDefault();
     m_mat.maps[MATERIAL_MAP_DIFFUSE].texture = BlockLoader::getInstance().getAtlas();
 
@@ -42,7 +43,10 @@ BlockID Chunk::GetBlock(Vector3i pos) const {
     // If outside
     if(pos.x < 0 || pos.y < 0 || pos.z < 0 ||
         pos.x >= CH_SIZE.x || pos.y >= CH_SIZE.y || pos.z >= CH_SIZE.z) {
-        return BlockID(0);
+        // return BlockID(0);
+        BlockID a = chman->GetBlock(pos + m_chunk_pos * CH_SIZE);
+        std::cout << a << std::endl;
+        return a;
     }
     return m_data[Vec3_to_idx(pos, CH_SIZE)];
 }

@@ -14,7 +14,7 @@ public:
 
     ChunkManager();
 
-    BlockID GetBlock(Vector3i pos);
+    BlockID GetBlock(Vector3i pos) const;
 
     void LoadChunk(Vector3i chunk_pos);
 

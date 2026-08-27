@@ -11,17 +11,23 @@
 constexpr Vector3i CH_SIZE = { 16, 32, 16 };
 
 inline Vector3i getChunk(Vector3i world) {
-    return Vector3i(world.x / CH_SIZE.x, world.y / CH_SIZE.y, world.z / CH_SIZE.z);
+    return {
+        floorDiv(world.x, CH_SIZE.x),
+        floorDiv(world.y, CH_SIZE.y),
+        floorDiv(world.z, CH_SIZE.z)
+    };
 }
 
 inline Vector3i worldToChunk(Vector3i world) {
-    return world - getChunk(world);
+    return world - getChunk(world)*CH_SIZE;
 }
+
+class ChunkManager;
 
 class Chunk {
 public:
 
-    Chunk(Vector3i chunk_pos);
+    Chunk(ChunkManager* _chman, Vector3i chunk_pos);
 
     void Draw();
 
@@ -45,6 +51,8 @@ private:
     Matrix m_matrix;
 
     void update_mesh();
+
+    ChunkManager* chman;
 
     // [0, 1, 2, 3, 4, 5] => [Top, Bottom, Right, Left, Front, Back]
     void add_face(int face, Vector3 pos, unsigned int faceID, MeshData& data);

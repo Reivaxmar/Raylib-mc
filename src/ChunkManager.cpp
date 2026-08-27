@@ -5,8 +5,9 @@ ChunkManager::ChunkManager() {
 
 }
 
-BlockID ChunkManager::GetBlock(Vector3i pos) {
-    Vector3 ch_pos = getChunk(pos);
+BlockID ChunkManager::GetBlock(Vector3i pos) const {
+    // return BlockID(0);
+    Vector3i ch_pos = getChunk(pos);
 
     auto it = m_chunks.find(ch_pos);
     
@@ -17,7 +18,7 @@ BlockID ChunkManager::GetBlock(Vector3i pos) {
 }
 
 void ChunkManager::LoadChunk(Vector3i chunk_pos) {
-    auto [it, inserted] = m_chunks.try_emplace(chunk_pos, chunk_pos);
+    auto [it, inserted] = m_chunks.try_emplace(chunk_pos, this, chunk_pos);
 
     if(inserted) {
         it->second.GenerateTerrain(67);
