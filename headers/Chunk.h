@@ -3,6 +3,7 @@
 
 #include <array>
 #include <vector>
+#include <atomic>
 #include "Utils.h"
 #include "Block.h"
 
@@ -35,7 +36,14 @@ public:
 
     BlockID GetBlock(Vector3i pos) const;
 
-    void GenerateTerrain(int seed);
+    void GenerateTerrain();
+
+    enum class State : int8_t { EMPTY, GENERATED, MESHED, UPLOADED };
+    State GetState() const;
+
+    // void TryUpdateMesh();
+    void GenerateMesh();
+    void TryUploadMesh();
 
 private:
 
@@ -48,9 +56,12 @@ private:
     Mesh m_opaque_mesh, m_cutout_mesh, m_transparent_mesh;
     Material m_mat;
 
+    std::atomic<State> m_state;
+
     Matrix m_matrix;
 
-    void update_mesh();
+    void generate_mesh();
+    void upload_mesh();
 
     ChunkManager* chman;
 

@@ -3,6 +3,7 @@
 #include <iostream>
 
 Chunk::Chunk(ChunkManager* _chman, Vector3i chunk_pos) : chman(_chman) {
+    m_state.store(State::EMPTY);
     m_mat = LoadMaterialDefault();
     m_mat.maps[MATERIAL_MAP_DIFFUSE].texture = BlockLoader::getInstance().getAtlas();
 
@@ -18,10 +19,22 @@ Chunk::Chunk(ChunkManager* _chman, Vector3i chunk_pos) : chman(_chman) {
 
 }
 
-void Chunk::Draw() {
+void Chunk::GenerateMesh() {
+    // if(m_state == State::MESHED) upload_mesh();
     if(m_upd_mesh) {
-        update_mesh();
+        generate_mesh();
     }
+}
+
+void Chunk::TryUploadMesh() {
+    if(m_state == State::MESHED) upload_mesh();
+}
+
+void Chunk::Draw() {
+
+    GenerateMesh();
+    TryUploadMesh();
+    // std::cout << "Drawing... " << m_opaque_mesh.vertexCount << "\n";
 
     DrawMesh(m_opaque_mesh, m_mat, m_matrix);
     DrawMesh(m_cutout_mesh, m_mat, m_matrix);
@@ -48,7 +61,7 @@ BlockID Chunk::GetBlock(Vector3i pos) const {
     return m_data[Vec3_to_idx(pos, CH_SIZE)];
 }
 
-void Chunk::GenerateTerrain(int seed) {
+void Chunk::GenerateTerrain() {
 
     m_data.fill(BlockID(0));
 
@@ -64,9 +77,22 @@ void Chunk::GenerateTerrain(int seed) {
             }
         }
     }
+    m_state.store(State::GENERATED);
 }
 
-void Chunk::update_mesh() {
+void Chunk::upload_mesh() {
+    if(m_opaque_mesh.vaoId != 0) UnloadMesh(m_opaque_mesh);
+    if(m_transparent_mesh.vaoId != 0) UnloadMesh(m_transparent_mesh);
+    if(m_cutout_mesh.vaoId != 0) UnloadMesh(m_cutout_mesh);
+    
+    UploadMesh(&m_opaque_mesh, false);
+    UploadMesh(&m_transparent_mesh, false);
+    UploadMesh(&m_cutout_mesh, false);
+
+    m_state.store(State::UPLOADED);
+}
+
+void Chunk::generate_mesh() {
     MeshData opaque, transparent, cutout;
 
     for(int x = 0; x < CH_SIZE.x; x++) {
@@ -111,11 +137,6 @@ void Chunk::update_mesh() {
         }
     }
 
-    if(m_opaque_mesh.vaoId != 0) UnloadMesh(m_opaque_mesh);
-    if(m_transparent_mesh.vaoId != 0) UnloadMesh(m_transparent_mesh);
-    if(m_cutout_mesh.vaoId != 0) UnloadMesh(m_cutout_mesh);
-        
-
     m_opaque_mesh = {0};
     m_transparent_mesh = {0};
     m_cutout_mesh = {0};
@@ -124,11 +145,12 @@ void Chunk::update_mesh() {
     transparent.UploadData(m_transparent_mesh);
     cutout.UploadData(m_cutout_mesh);
 
-    UploadMesh(&m_opaque_mesh, false);
-    UploadMesh(&m_transparent_mesh, false);
-    UploadMesh(&m_cutout_mesh, false);
-
     m_upd_mesh = false;
+    m_state.store(State::MESHED);
+}
+
+Chunk::State Chunk::GetState() const {
+    return m_state.load();
 }
 
 void Chunk::add_face(int face, Vector3 pos, unsigned int faceID, MeshData& data) {

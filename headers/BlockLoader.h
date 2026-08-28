@@ -56,7 +56,7 @@ public:
         return m_data;
     }
 
-    const std::string& getName(const BlockID& id) const {
+    const std::string getName(const BlockID& id) const {
         if(id > m_blockNames.size()) return "";
         return m_blockNames[id];
     }

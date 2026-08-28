@@ -3,6 +3,10 @@
 
 #include <map>
 #include <PerlinNoise.hpp>
+#include <thread>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
 
 #include "Utils.h"
 #include "Chunk.h"
@@ -26,11 +30,21 @@ private:
     std::map<Vector3i, Chunk> m_chunks;
     const siv::PerlinNoise m_noise;
     GenerationSettings m_settings;
+    std::thread m_gen_thread;
+    std::mutex m_mutex;
+    std::queue<Chunk*> m_chunk_queue;
+    std::condition_variable m_cv;
+    bool m_stop;
+
+    void chunkWorker();
+    void processChunk(Chunk* chunk);
 
     
 public:
     
     ChunkManager(siv::PerlinNoise::seed_type seed);
+
+    ~ChunkManager();
     
     BlockID GetBlock(Vector3i pos) const;
     

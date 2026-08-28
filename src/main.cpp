@@ -22,6 +22,12 @@ int main() {
         player.update(GetFrameTime());
 
         chman.LoadChunk(getChunk(Vector3i(player.get_cam().position)));
+        chman.LoadChunk(getChunk(Vector3i(player.get_cam().position)) + Vector3i(1, 0, 0));
+        chman.LoadChunk(getChunk(Vector3i(player.get_cam().position)) + Vector3i(-1, 0, 0));
+        chman.LoadChunk(getChunk(Vector3i(player.get_cam().position)) + Vector3i(0, 1, 0));
+        chman.LoadChunk(getChunk(Vector3i(player.get_cam().position)) + Vector3i(0, -1, 0));
+        chman.LoadChunk(getChunk(Vector3i(player.get_cam().position)) + Vector3i(0, 0, 1));
+        chman.LoadChunk(getChunk(Vector3i(player.get_cam().position)) + Vector3i(0, 0, -1));
         
         BeginDrawing();
 
