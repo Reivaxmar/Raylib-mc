@@ -39,5 +39,5 @@ There is no need to have them installed, CMake will do it:
 - [x] Multithreaded world generation
 - [ ] Block placing/deleting
 - [ ] Visuals (skybox, occlusion, etc)
-- [ ] Better player movement
+- [x] Better player movement
 - [ ] Basic inventory + UI

@@ -2,7 +2,8 @@
 #define PLAYER_CLASS_H
 
 #include <raylib.h>
-// #include <rcamera.h>
+#include <iostream>
+#include <rcamera.h>
 
 class Player {
 public:
@@ -15,7 +16,22 @@ public:
     }
 
     void update(float delta) {
-        UpdateCamera(&m_cam, CAMERA_FREE); // For now
+        // Rotate camera
+        const Vector2 mouse = GetMouseDelta();
+        CameraYaw(&m_cam, -mouse.x * m_sensitivity, false);
+        CameraPitch(&m_cam, -mouse.y * m_sensitivity, true, false, false);
+
+        // Speed increase with L_CTRL
+        float speed = m_speed;
+        if(IsKeyDown(KEY_LEFT_CONTROL)) speed *= 3.f;
+
+        // Camera movement
+        if(IsKeyDown(KEY_A)) CameraMoveRight(&m_cam, -speed * delta, true);
+        if(IsKeyDown(KEY_D)) CameraMoveRight(&m_cam,  speed * delta, true);
+        if(IsKeyDown(KEY_W)) CameraMoveForward(&m_cam,  speed * delta, true);
+        if(IsKeyDown(KEY_S)) CameraMoveForward(&m_cam, -speed * delta, true);
+        if(IsKeyDown(KEY_SPACE)) CameraMoveUp(&m_cam,  speed * delta);
+        if(IsKeyDown(KEY_LEFT_SHIFT)) CameraMoveUp(&m_cam, -speed * delta);
     }
 
     const Camera& get_cam() const {
@@ -24,6 +40,8 @@ public:
 
 private:
     Camera m_cam;
+    float m_sensitivity = 0.003f;
+    float m_speed = 8.f;
 };
 
 
