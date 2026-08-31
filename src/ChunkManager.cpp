@@ -11,6 +11,7 @@ ChunkManager::~ChunkManager() {
 }
 
 BlockID ChunkManager::GetBlock(Vector3i pos) const {
+    return 0;
     // return BlockID(0);
     Vector3i ch_pos = getChunk(pos);
 

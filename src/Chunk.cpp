@@ -94,13 +94,14 @@ void Chunk::upload_mesh() {
 
 void Chunk::generate_mesh() {
     MeshData opaque, transparent, cutout;
+    auto& bl = BlockLoader::getInstance();
 
     for(int x = 0; x < CH_SIZE.x; x++) {
         for(int y = 0; y < CH_SIZE.y; y++) {
             for(int z = 0; z < CH_SIZE.z; z++) {
                 int idx = Vec3_to_idx({x, y, z}, CH_SIZE);
                 BlockID block = m_data[idx];
-                BlockData bData = getBlockData(block);
+                BlockData bData = bl.getBlockData(block);
                 if(!bData.drawn) continue;
 
                 Vector3i pos = (Vector3i){ x, y, z };
@@ -113,24 +114,24 @@ void Chunk::generate_mesh() {
                 // |   |
                 // 3---0
 
-                if(getBlockData(GetBlock(pos + (Vector3i){0, 1, 0})).transparent && GetBlock(pos + (Vector3i){0, 1, 0}) != block) {
+                if(bl.getBlockData(GetBlock(pos + (Vector3i){0, 1, 0})).transparent && GetBlock(pos + (Vector3i){0, 1, 0}) != block) {
                     add_face(0, Vector3(pos), bData.faceIDs[0], *data);
                 }
-                if(getBlockData(GetBlock(pos + (Vector3i){0, -1, 0})).transparent && GetBlock(pos + (Vector3i){0, -1, 0}) != block) {
+                if(bl.getBlockData(GetBlock(pos + (Vector3i){0, -1, 0})).transparent && GetBlock(pos + (Vector3i){0, -1, 0}) != block) {
                     add_face(1, Vector3(pos), bData.faceIDs[1], *data);
                 }
                 
-                if(getBlockData(GetBlock(pos + (Vector3i){1, 0, 0})).transparent && GetBlock(pos + (Vector3i){1, 0, 0}) != block) {
+                if(bl.getBlockData(GetBlock(pos + (Vector3i){1, 0, 0})).transparent && GetBlock(pos + (Vector3i){1, 0, 0}) != block) {
                     add_face(2, Vector3(pos), bData.faceIDs[2], *data);
                 }
-                if(getBlockData(GetBlock(pos + (Vector3i){-1, 0, 0})).transparent && GetBlock(pos + (Vector3i){-1, 0, 0}) != block) {
+                if(bl.getBlockData(GetBlock(pos + (Vector3i){-1, 0, 0})).transparent && GetBlock(pos + (Vector3i){-1, 0, 0}) != block) {
                     add_face(3, Vector3(pos), bData.faceIDs[3], *data);
                 }
 
-                if(getBlockData(GetBlock(pos + (Vector3i){0, 0, 1})).transparent && GetBlock(pos + (Vector3i){0, 0, 1}) != block) {
+                if(bl.getBlockData(GetBlock(pos + (Vector3i){0, 0, 1})).transparent && GetBlock(pos + (Vector3i){0, 0, 1}) != block) {
                     add_face(4, Vector3(pos), bData.faceIDs[4], *data);
                 }
-                if(getBlockData(GetBlock(pos + (Vector3i){0, 0, -1})).transparent && GetBlock(pos + (Vector3i){0, 0, -1}) != block) {
+                if(bl.getBlockData(GetBlock(pos + (Vector3i){0, 0, -1})).transparent && GetBlock(pos + (Vector3i){0, 0, -1}) != block) {
                     add_face(5, Vector3(pos), bData.faceIDs[5], *data);
                 }
             }
