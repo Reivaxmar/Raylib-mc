@@ -5,6 +5,7 @@
 #include <vector>
 #include <raymath.h>
 #include <iostream>
+#include <cstring>
 
 struct Vector3i {
     int x, y, z;
@@ -91,10 +92,18 @@ struct MeshData {
     void UploadData(Mesh& mesh) {
         mesh.vertexCount = verts.size();
         mesh.triangleCount = indices.size() / 3;
-        mesh.vertices = reinterpret_cast<float*>(verts.data());
-        mesh.indices = indices.data();
-        mesh.normals = reinterpret_cast<float*>(normals.data());
-        mesh.texcoords = reinterpret_cast<float*>(uvs.data());
+
+        mesh.vertices = static_cast<float*>(MemAlloc(verts.size() * sizeof(Vector3)));
+        memcpy(mesh.vertices, verts.data(), verts.size() * sizeof(Vector3));
+
+        mesh.indices = static_cast<unsigned short*>(MemAlloc(indices.size() * sizeof(unsigned short)));
+        memcpy(mesh.indices, indices.data(), indices.size() * sizeof(unsigned short));
+
+        mesh.normals = static_cast<float*>(MemAlloc(normals.size() * sizeof(Vector3)));
+        memcpy(mesh.normals, normals.data(), normals.size() * sizeof(Vector3));
+
+        mesh.texcoords = static_cast<float*>(MemAlloc(uvs.size() * sizeof(Vector2)));
+        memcpy(mesh.texcoords, uvs.data(), uvs.size() * sizeof(Vector2));
     }
 };
 

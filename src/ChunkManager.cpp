@@ -37,8 +37,10 @@ void ChunkManager::Draw() {
     for(auto& it : m_chunks) {
         // it.second.Draw();
         // auto state = it.second.GetState();
-        if(it.second.GetState() == Chunk::State::MESHED) it.second.TryUploadMesh();
-        if(it.second.GetState() == Chunk::State::UPLOADED) it.second.Draw();
+        // if(it.second.GetState() == Chunk::State::MESHED) it.second.TryUploadMesh();
+        // if(it.second.GetState() == Chunk::State::UPLOADED) it.second.Draw();
+        if(it.second.GetState() < Chunk::State::MESHED) continue;
+        it.second.Draw();
         // std::cout << (it.second.GetState() == Chunk::State::MESHED) << std::endl;
         // std::cout << int(it.second.GetState()) << ", " << int(Chunk::State::MESHED) << std::endl;
     }

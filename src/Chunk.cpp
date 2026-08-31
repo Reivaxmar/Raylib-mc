@@ -19,8 +19,15 @@ Chunk::Chunk(ChunkManager* _chman, Vector3i chunk_pos) : chman(_chman) {
 
 }
 
+Chunk::~Chunk() {
+    UnloadMaterial(m_mat);
+    UnloadMesh(m_opaque_mesh);
+    UnloadMesh(m_transparent_mesh);
+    UnloadMesh(m_cutout_mesh);
+}
+
 void Chunk::GenerateMesh() {
-    // if(m_state == State::MESHED) upload_mesh();
+    if(m_state == State::EMPTY) return;
     if(m_upd_mesh) {
         generate_mesh();
     }
@@ -93,7 +100,7 @@ void Chunk::upload_mesh() {
 }
 
 void Chunk::generate_mesh() {
-    MeshData opaque, transparent, cutout;
+    // MeshData opaque, transparent, cutout;
     auto& bl = BlockLoader::getInstance();
 
     for(int x = 0; x < CH_SIZE.x; x++) {
@@ -106,8 +113,8 @@ void Chunk::generate_mesh() {
 
                 Vector3i pos = (Vector3i){ x, y, z };
 
-                MeshData* data = &opaque;
-                if(bData.transparent) data = &transparent;
+                MeshData* data = &m_opaque_data;
+                if(bData.transparent) data = &m_transparent_data;
 
                 // Faces:
                 // 2---1
@@ -142,9 +149,9 @@ void Chunk::generate_mesh() {
     m_transparent_mesh = {0};
     m_cutout_mesh = {0};
 
-    opaque.UploadData(m_opaque_mesh);
-    transparent.UploadData(m_transparent_mesh);
-    cutout.UploadData(m_cutout_mesh);
+    m_opaque_data.UploadData(m_opaque_mesh);
+    m_transparent_data.UploadData(m_transparent_mesh);
+    m_cutout_data.UploadData(m_cutout_mesh);
 
     m_upd_mesh = false;
     m_state.store(State::MESHED);

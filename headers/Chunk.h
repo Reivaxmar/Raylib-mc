@@ -11,7 +11,7 @@
 
 constexpr Vector3i CH_SIZE = { 16, 32, 16 };
 
-inline Vector3i getChunk(Vector3i world) {
+inline Vector3i getChunk(Vector3 world) {
     return {
         floorDiv(world.x, CH_SIZE.x),
         floorDiv(world.y, CH_SIZE.y),
@@ -29,6 +29,7 @@ class Chunk {
 public:
 
     Chunk(ChunkManager* _chman, Vector3i chunk_pos);
+    ~Chunk();
 
     void Draw();
 
@@ -53,6 +54,7 @@ private:
 
     bool m_upd_mesh;
 
+    MeshData m_opaque_data, m_transparent_data, m_cutout_data;
     Mesh m_opaque_mesh, m_cutout_mesh, m_transparent_mesh;
     Material m_mat;
 
