@@ -17,17 +17,30 @@ int main() {
     Player player;
     ChunkManager chman(12345u);
 
+    Vector3i prevChunk;
+
     while(!WindowShouldClose()) {
 
         player.update(GetFrameTime());
+        Vector3i curChunk = getChunk(player.get_cam().position);
+        if(prevChunk != curChunk) {
+            for(int x = -5; x <= 5; ++x) {
+                for(int y = -1; y <= 1; ++y) {
+                    for(int z = -5; z <= 5; ++z) {
+                        chman.LoadChunk(curChunk + Vector3i(x, y, z));
+                    }
+                }
+            }
+        }
+        prevChunk = curChunk;
 
-        chman.LoadChunk(getChunk(Vector3(player.get_cam().position)));
-        chman.LoadChunk(getChunk(Vector3(player.get_cam().position)) + Vector3i(1, 0, 0));
-        chman.LoadChunk(getChunk(Vector3(player.get_cam().position)) + Vector3i(-1, 0, 0));
-        chman.LoadChunk(getChunk(Vector3(player.get_cam().position)) + Vector3i(0, 1, 0));
-        chman.LoadChunk(getChunk(Vector3(player.get_cam().position)) + Vector3i(0, -1, 0));
-        chman.LoadChunk(getChunk(Vector3(player.get_cam().position)) + Vector3i(0, 0, 1));
-        chman.LoadChunk(getChunk(Vector3(player.get_cam().position)) + Vector3i(0, 0, -1));
+        // chman.LoadChunk(getChunk(Vector3(player.get_cam().position)));
+        // chman.LoadChunk(getChunk(Vector3(player.get_cam().position)) + Vector3i(1, 0, 0));
+        // chman.LoadChunk(getChunk(Vector3(player.get_cam().position)) + Vector3i(-1, 0, 0));
+        // chman.LoadChunk(getChunk(Vector3(player.get_cam().position)) + Vector3i(0, 1, 0));
+        // chman.LoadChunk(getChunk(Vector3(player.get_cam().position)) + Vector3i(0, -1, 0));
+        // chman.LoadChunk(getChunk(Vector3(player.get_cam().position)) + Vector3i(0, 0, 1));
+        // chman.LoadChunk(getChunk(Vector3(player.get_cam().position)) + Vector3i(0, 0, -1));
         
         BeginDrawing();
 

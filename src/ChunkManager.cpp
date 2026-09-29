@@ -11,8 +11,8 @@ ChunkManager::~ChunkManager() {
 }
 
 BlockID ChunkManager::GetBlock(Vector3i pos) const {
-    return 0;
-    // return BlockID(0);
+    // return 1;
+    // // return BlockID(0);
     Vector3i ch_pos = getChunk(pos);
 
     auto it = m_chunks.find(ch_pos);
@@ -25,12 +25,17 @@ BlockID ChunkManager::GetBlock(Vector3i pos) const {
 
 void ChunkManager::LoadChunk(Vector3i chunk_pos) {
 
-    auto [it, inserted] = m_chunks.try_emplace(chunk_pos, this, chunk_pos);
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        auto [it, inserted] = m_chunks.try_emplace(chunk_pos, this, chunk_pos);
 
-    if(inserted) {
-        m_chunk_queue.push(&it->second);
-        m_cv.notify_one();
+        if(inserted) {
+            m_chunk_queue.push(&it->second);
+        }
     }
+    
+    m_cv.notify_one();
+    
 }
 
 void ChunkManager::Draw() {
@@ -39,7 +44,7 @@ void ChunkManager::Draw() {
         // auto state = it.second.GetState();
         // if(it.second.GetState() == Chunk::State::MESHED) it.second.TryUploadMesh();
         // if(it.second.GetState() == Chunk::State::UPLOADED) it.second.Draw();
-        if(it.second.GetState() < Chunk::State::MESHED) continue;
+        // if(it.second.GetState() < Chunk::State::MESHED) continue;
         it.second.Draw();
         // std::cout << (it.second.GetState() == Chunk::State::MESHED) << std::endl;
         // std::cout << int(it.second.GetState()) << ", " << int(Chunk::State::MESHED) << std::endl;
@@ -79,7 +84,7 @@ void ChunkManager::chunkWorker() {
 void ChunkManager::processChunk(Chunk* chunk) {
 
     chunk->GenerateTerrain();
-    chunk->GenerateMesh();
+    if(!chunk->GenerateMesh()) {}
 
     // auto [it, inserted] = m_chunks.try_emplace(pos, this, pos);
 
@@ -87,4 +92,12 @@ void ChunkManager::processChunk(Chunk* chunk) {
     //     it->second.GenerateTerrain();
     //     it->second.GenerateMesh();
     // }
+}
+
+Chunk::State ChunkManager::GetChunkState(Vector3i chunk_pos) {
+    auto it = m_chunks.find(chunk_pos);
+    if(it == m_chunks.end()) {
+        return Chunk::State::EMPTY;
+    }
+    return it->second.GetState();
 }

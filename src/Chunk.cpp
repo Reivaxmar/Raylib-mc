@@ -26,11 +26,18 @@ Chunk::~Chunk() {
     UnloadMesh(m_cutout_mesh);
 }
 
-void Chunk::GenerateMesh() {
-    if(m_state == State::EMPTY) return;
+bool Chunk::GenerateMesh() {
+    if(m_state == State::EMPTY) return false;
+    for(int i = -1; i <= 1; i += 2) {
+        if(chman->GetChunkState(m_chunk_pos + Vector3i(i, 0, 0)) < State::GENERATED) return false;
+        if(chman->GetChunkState(m_chunk_pos + Vector3i(0, i, 0)) < State::GENERATED) return false;
+        if(chman->GetChunkState(m_chunk_pos + Vector3i(0, 0, i)) < State::GENERATED) return false;
+    }
+    // if(chman->GetChunkState(m_chunk_pos + Vector3i(1, 0, 0)) == State::EMPTY)
     if(m_upd_mesh) {
         generate_mesh();
     }
+    return true;
 }
 
 void Chunk::TryUploadMesh() {
@@ -38,6 +45,7 @@ void Chunk::TryUploadMesh() {
 }
 
 void Chunk::Draw() {
+    // std::cout << ""
 
     GenerateMesh();
     TryUploadMesh();
@@ -46,6 +54,16 @@ void Chunk::Draw() {
     DrawMesh(m_opaque_mesh, m_mat, m_matrix);
     DrawMesh(m_cutout_mesh, m_mat, m_matrix);
     DrawMesh(m_transparent_mesh, m_mat, m_matrix);
+
+    DrawCubeWiresV(m_chunk_pos * CH_SIZE + Vector3i(8, 8, 8), CH_SIZE, BLACK);
+
+    // DrawModelWires(Model{.meshes = {&m_opaque_mesh}}, Vector3(m_chunk_pos.x * CH_SIZE.x, m_chunk_pos.y * CH_SIZE.y, m_chunk_pos.z * CH_SIZE.z), 1, BLACK);
+    // DrawModelWires(Model{.meshes = {&m_cutout_mesh}}, Vector3(m_chunk_pos.x * CH_SIZE.x, m_chunk_pos.y * CH_SIZE.y, m_chunk_pos.z * CH_SIZE.z), 1, BLACK);
+    // DrawModelWires(Model{.meshes = {&m_transparent_mesh}}, Vector3(m_chunk_pos.x * CH_SIZE.x, m_chunk_pos.y * CH_SIZE.y, m_chunk_pos.z * CH_SIZE.z), 1, BLACK);
+    // DrawModelWires(m_opaque_mesh, m_mat, m_matrix);
+    // DrawModelWires(m_cutout_mesh, m_mat, m_matrix);
+    // DrawModelWires(m_transparent_mesh, m_mat, m_matrix);
+
 }
 
 void Chunk::SetBlock(Vector3i pos, BlockID block) {
@@ -79,7 +97,7 @@ void Chunk::GenerateTerrain() {
             int height = chman->GetTerrainHeight(xzworld);
             for(int y = 0; y < CH_SIZE.y; y++) {
                 if(height - y - chunk_world.y > 0) m_data[Vec3_to_idx(Vector3i(x, y, z), CH_SIZE)] = BlockID(1);
-                else if(height - y == 0) m_data[Vec3_to_idx(Vector3i(x, y, z), CH_SIZE)] = BlockID(3);
+                else if(height - y - chunk_world.y == 0) m_data[Vec3_to_idx(Vector3i(x, y, z), CH_SIZE)] = BlockID(3);
                 else break;
             }
         }

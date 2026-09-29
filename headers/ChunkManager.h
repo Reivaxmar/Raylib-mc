@@ -54,6 +54,8 @@ public:
     
     int GetTerrainHeight(Vector2i pos);
 
+    Chunk::State GetChunkState(Vector3i chunk_pos); 
+
 };
 
 #endif // CHUNK_MANAGER_CLASS_H

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 # Set project name
 project(mc)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 # Get all the files
 file(GLOB_RECURSE SOURCES src/*.cpp)

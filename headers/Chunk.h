@@ -43,7 +43,7 @@ public:
     State GetState() const;
 
     // void TryUpdateMesh();
-    void GenerateMesh();
+    bool GenerateMesh();
     void TryUploadMesh();
 
 private:
